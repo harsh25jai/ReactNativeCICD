@@ -72,7 +72,7 @@ jobs:
 
       # Upload to Artifact
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: android.aab
           path: "android/"
