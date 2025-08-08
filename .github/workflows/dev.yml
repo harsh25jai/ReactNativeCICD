@@ -5,7 +5,12 @@ name: Develop Updated
 
 on:
   push:
-    branches: [develop]
+    branches:
+      - "develop"
+  pull_request:
+    # The workflow gets triggered when there's pull request against these branches are raised
+    branches:
+      - "develop"
 
 jobs:
   # versioning:
