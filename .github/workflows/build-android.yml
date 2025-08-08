@@ -36,9 +36,7 @@ jobs:
           node-version: '17'
 
       - name: Check development environment
-        run: node -v
-        run: npm -v
-        run: java -version
+        run: node -v && npm -v && java -version
 
       - name: Install Node modules
         run: npm install
