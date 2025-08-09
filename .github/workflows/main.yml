@@ -1,5 +1,6 @@
 #  https://github.com/paramsinghvc/Timely/blob/main/.github/workflows
 name: Pull Request into Master, Develop and Preprod
+description: 'Checks out code, caches node_modules, installs dependencies'
 
 on:
   push:
@@ -33,6 +34,12 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      
+      - name: Directory
+        run: pwd
+
+      - name: Check development environment
+        run: node -v && npm -v && java -version
 
       - name: Install Node modules
         run: npm install
