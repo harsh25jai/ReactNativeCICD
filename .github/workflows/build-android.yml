@@ -24,8 +24,7 @@ on:
 
 jobs:
   build-android:
-    uses: ./.github/workflows/main.yml  
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/main.yml
 
     steps:
       - name: Cache Gradle Wrapper
