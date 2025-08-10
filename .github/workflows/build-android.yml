@@ -23,12 +23,13 @@ on:
     #     required: true
 
 jobs:
+  setup:
+    uses: ./.github/workflows/main.yml 
+
   build-android:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: ./.github/workflows/main.yml  
-
       - name: Cache Gradle Wrapper
         uses: actions/cache@v3
         with:
