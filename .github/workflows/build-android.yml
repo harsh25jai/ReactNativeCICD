@@ -23,8 +23,10 @@ on:
     #     required: true
 
 jobs:
+  setup:
+    uses: ./.github/workflows/main.yml 
+
   build-android:
-    uses: ./.github/workflows/main.yml  
     runs-on: ubuntu-latest
 
     steps:
