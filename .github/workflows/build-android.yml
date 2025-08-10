@@ -30,6 +30,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Directory
+        run: pwd
+      
       - name: Cache Gradle Wrapper
         uses: actions/cache@v3
         with:
