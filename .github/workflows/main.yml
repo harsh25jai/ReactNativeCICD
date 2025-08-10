@@ -3,6 +3,7 @@ name: Pull Request into Master, Develop and Preprod
 description: 'Checks out code, caches node_modules, installs dependencies'
 
 on:
+  workflow_call:  
   push:
     branches:
       - "main"
