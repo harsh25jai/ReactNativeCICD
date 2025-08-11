@@ -68,7 +68,7 @@ jobs:
         run: cd ios && pod install && cd ..
 
       - name: Build iOS
-        run: xcodebuild archive -project ReactNativeCICD.xcodeproj -scheme ReactNativeCICD -archivePath ReactNativeCICD.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        run: cd ios && xcodebuild archive -project ReactNativeCICD.xcodeproj -scheme ReactNativeCICD -archivePath ReactNativeCICD.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 
       # - name: Build iOS (Release)
       #   uses: yukiarrr/ios-build-action@v1
@@ -82,11 +82,11 @@ jobs:
       #     workspace-path: ios/Timely.xcworkspace
       #     output-path: "Timely.ipa"
 
-      - name: Upload Artifact - iOS IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: "AppIPA"
-          path: "app.ipa"
+      # - name: Upload Artifact - iOS IPA
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: "AppIPA"
+      #     path: "app.ipa"
 
   # publish-to-appcenter:
   #   if: ${{ inputs.publish == true }}
