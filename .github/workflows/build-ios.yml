@@ -44,14 +44,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       
+      - name: Set up Ruby and cache gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1' # use your project's Ruby version
+          bundler-cache: true
+      
       - name: Directory
         run: pwd
 
       - name: Check development environment
-        run: node -v && npm -v && xcodebuild -version
+        run: node -v && npm -v && ruby -v && xcodebuild -version && sw_vers
 
       - name: Install Node modules
         run: npm install
+      
+      - name: Install CocoaPods dependencies
+        run: bundle install
 
       - name: Cache Pods
         uses: actions/cache@v4
@@ -65,10 +74,10 @@ jobs:
             ${{ runner.os }}-pods-
 
       - name: Install pod dependencies
-        run: cd ios && pod install && cd ..
+        run: cd ios && bundle exec pod install && cd ..
 
       - name: Build iOS
-        run: cd ios && xcodebuild archive -project ReactNativeCICD.xcodeproj -scheme ReactNativeCICD -archivePath ReactNativeCICD.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        run: cd ios && xcodebuild archive -workspace ReactNativeCICD.xcworkspace -scheme ReactNativeCICD -archivePath ReactNativeCICD.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 
       # - name: Build iOS (Release)
       #   uses: yukiarrr/ios-build-action@v1
@@ -82,11 +91,11 @@ jobs:
       #     workspace-path: ios/Timely.xcworkspace
       #     output-path: "Timely.ipa"
 
-      # - name: Upload Artifact - iOS IPA
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: "AppIPA"
-      #     path: "app.ipa"
+      - name: Upload Artifact - iOS IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: "AppIPA"
+          path: "ios/ReactNativeCICD.xcarchive/Products/Applications"
 
   # publish-to-appcenter:
   #   if: ${{ inputs.publish == true }}
