@@ -34,5 +34,6 @@ jobs:
     needs: versioning
     uses: ./.github/workflows/build-ios.yml
     with:
+      environment: release
       # publish: true
     secrets: inherit

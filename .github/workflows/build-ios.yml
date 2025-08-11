@@ -4,6 +4,10 @@ name: "iOS Build"
 on:
   workflow_call:
     inputs:
+      environment:
+        required: false
+        type: string
+        default: "release"
       # publish:
       #   required: false
       #   type: boolean
