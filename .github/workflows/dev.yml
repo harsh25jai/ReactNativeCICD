@@ -31,7 +31,7 @@ jobs:
 
   # Third Job
   build-and-release-ios:
-    needs: versioning
+    # needs: versioning
     uses: ./.github/workflows/build-ios.yml
     with:
       environment: release
