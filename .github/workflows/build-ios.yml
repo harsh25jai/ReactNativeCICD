@@ -76,7 +76,7 @@ jobs:
       - name: Install pod dependencies
         run: cd ios && bundle exec pod install && cd ..
 
-      - name: Build iOS
+      - name: Build unsigned iOS
         run: cd ios && xcodebuild archive -workspace ReactNativeCICD.xcworkspace -scheme ReactNativeCICD -archivePath ReactNativeCICD.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 
       # - name: Build iOS (Release)
