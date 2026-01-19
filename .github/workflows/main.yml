@@ -14,11 +14,45 @@ on:
       - "develop"
       - "preprod"
 
-jobs:
-  #First job
-  install-and-test:
-    runs-on: ubuntu-latest
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
+jobs:
+  #First job: Install dependencies if no cache hit
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Cache Node.js modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Directory
+        run: pwd
+
+      - name: Check development environment
+        run: node -v && npm -v && java -version
+
+      - name: Install Node modules
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
+
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,21 +66,32 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json', 'package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      
-      - name: Directory
-        run: pwd
-
-      - name: Check development environment
-        run: node -v && npm -v && java -version
-
-      - name: Install Node modules
-        run: npm install
 
       - name: Linting
         run: npm run lint
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Tests
         run: npm run test
