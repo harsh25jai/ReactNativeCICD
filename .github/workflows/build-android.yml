@@ -59,31 +59,15 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Cache Gradle Wrapper
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-
-      - name: Cache Gradle Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Make Gradlew Executable
         run: cd android && chmod +x ./gradlew
-        # Build Command
 
-      - name: Build Android AAB ${{inputs.environment == 'release' && 'Release' || 'Debug'}}
+      - name: Build Android AAB and APK ${{inputs.environment == 'release' && 'Release' || 'Debug'}}
         run: |
-          cd android && ./gradlew bundle${{inputs.environment == 'release' && 'Release' || 'Debug'}} --no-daemon
-      
-      - name: Build Android APK ${{inputs.environment == 'release' && 'Release' || 'Debug'}}
-        run: |
-          cd android && ./gradlew assemble${{inputs.environment == 'release' && 'Release' || 'Debug'}} --no-daemon
+          cd android && ./gradlew bundle${{inputs.environment == 'release' && 'Release' || 'Debug'}} assemble${{inputs.environment == 'release' && 'Release' || 'Debug'}} --no-daemon
       
       # - name: Sign app APK
       #   uses: r0adkll/sign-android-release@v1

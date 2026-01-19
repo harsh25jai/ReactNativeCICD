@@ -7,12 +7,22 @@ on:
   push:
     branches:
       - "main"
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '**.md'
   pull_request:
     # The workflow gets triggered when there's pull request against these branches are raised
     branches:
       - "main"
       - "develop"
       - "preprod"
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '**.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -94,7 +104,15 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Tests
-        run: npm run test
+        run: npm run test -- --json --outputFile=jest-results.json
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Jest Tests
+          path: jest-results.json
+          reporter: jest-json
 
       # - name: Unit & Integration tests
       #   run: yarn test:ci
