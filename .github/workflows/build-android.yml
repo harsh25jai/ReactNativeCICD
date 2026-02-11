@@ -57,7 +57,7 @@ jobs:
 
       - name: Install Node modules
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4

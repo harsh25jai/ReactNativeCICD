@@ -1,4 +1,4 @@
-import { danger, warn, fail, message } from "danger";
+import { danger, warn, message } from "danger";
 
 // 1. Description Check
 if (danger.github.pr.body.length < 10) {

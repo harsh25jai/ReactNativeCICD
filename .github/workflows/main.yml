@@ -58,7 +58,7 @@ jobs:
 
       - name: Install Node modules
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci
 
   lint:
     needs: setup
@@ -107,13 +107,33 @@ jobs:
         run: npm run test -- --json --outputFile=jest-results.json
 
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
           name: Jest Tests
           path: jest-results.json
-          reporter: jest-json
-      
+          reporter: jest-junit
+
+  danger:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Run Danger
         run: npx danger ci
         env:
