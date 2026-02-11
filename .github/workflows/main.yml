@@ -104,15 +104,23 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Tests
-        run: npm run test -- --json --outputFile=jest-results.json
+        run: npm run test -- --ci --no-cache --coverage --reporters=default --reporters=jest-junit
 
       - name: Test Report
         uses: dorny/test-reporter@v2
         if: always()
         with:
           name: Jest Tests
-          path: jest-results.json
+          path: junit.xml
           reporter: jest-junit
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/lcov-report
+          retention-days: 7
 
   danger:
     needs: setup
