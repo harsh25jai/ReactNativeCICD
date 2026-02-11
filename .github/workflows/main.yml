@@ -7,12 +7,22 @@ on:
   push:
     branches:
       - "main"
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '**.md'
   pull_request:
     # The workflow gets triggered when there's pull request against these branches are raised
     branches:
       - "main"
       - "develop"
       - "preprod"
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '**.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -48,7 +58,7 @@ jobs:
 
       - name: Install Node modules
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci
 
   lint:
     needs: setup
@@ -94,7 +104,48 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Tests
-        run: npm run test
+        run: npm run test -- --ci --no-cache --coverage --reporters=default --reporters=jest-junit
+
+      - name: Test Report
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: Jest Tests
+          path: junit.xml
+          reporter: jest-junit
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/lcov-report
+          retention-days: 7
+
+  danger:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Run Danger
+        run: npx danger ci
+        env:
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
 
       # - name: Unit & Integration tests
       #   run: yarn test:ci
